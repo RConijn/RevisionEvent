@@ -1,10 +1,10 @@
-# RevisionEvent
+# RevisionEvent extraction
 Scripts from the manuscript titled "Automated extraction of revision events from keystroke logs" (under review)
 by Rianne Conijn, Emily Dux Speltz, and Evgeny Chukharev-Hudilainen
 
 Extraction of revision events for Inputlog and CyWrite data. Code can be adapted to other keystroke logging/eye tracking applications. Feel free to email me if you have any questions about the code. In most cases, the case_study.R file will be enough to run the model on a new dataset. All other files are provided as a refernce to show how the models are created.
 
-# Inputlog data:
+## Inputlog data:
 load_data_inputlog.R 
 Combines inputlog XML files into one csv file.
 in:  general.zip 
@@ -19,7 +19,7 @@ in:  all_logs.csv
 out: revision_annotation.csv
 
 
-# Cywrite data:
+## Cywrite data:
 Combines CyWrite JSON files into one csv file.
 load_data_cywrite.R
 in:  automatic.zip
@@ -39,7 +39,7 @@ in:  all_rev_end.csv
      all_fixations.csv
 out: all_eye_keys.csv
 
-# Modeling of Revision events
+## Modeling of Revision events
 predict_revision_start.R
 Runs several machine learning model to predict revision start, based on the annotated dataset.
 in:  all_keystrokes.csv
