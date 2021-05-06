@@ -6,11 +6,17 @@ Extraction of revision events for Inputlog and CyWrite data. Code can be adapted
 
 ## Inputlog data:
 load_data_inputlog.R 
+
 Combines inputlog XML files into one csv file.
+
 in:  general.zip 
+
      summary.zip 
+     
 out: all_logs.csv
+
      all_summary.csv
+     
 	 
 rule_based_inputlog.R
 Transforms Inputlogs keystroke data into the revision annotation table, which can be used for manual annotation or 
