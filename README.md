@@ -54,7 +54,7 @@ Runs several machine learning model to predict revision end, based on the annota
 
 in:  all_eye_keys.csv
 
-out: several machine learning models (see models folder)
+out: several machine learning models 
 
 `interpret_revision_end.R` Several functions to explore the performance of the machine learning models, including plots and feature importance.
 
@@ -64,5 +64,4 @@ out: several machine learning models (see models folder)
 in: CyWrite:  automatic.zip & fixations.zip
 
 in: Inputlog: revision_annotation.csv
-	
 
