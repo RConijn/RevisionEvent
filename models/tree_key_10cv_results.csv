@@ -1,0 +1,2 @@
+"","trainmethod","TN","FN","FP","TP","accuracy","accuracy_0","accuracy_1","accuracy_charsaway_mean","accuracy_charsaway_sd","precision","recall","f1"
+"1","tree",1459,6265,281,32275,0.837487586891758,0.240229885057471,0.420114942528736,4.13045977011494,6.87393195769697,0.991368718515788,0.837441619097042,0.90792730955328
