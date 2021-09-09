@@ -1,6 +1,6 @@
 #------------------------------------------------------------------------------#
 #                                                                              #
-# Code to create a data frame with raw keystroke data from Inputlog            #                                                 #
+# Code to create a data frame with raw keystroke data from Inputlog            #                                                 
 #                                                                              #
 # Pre-requisites:                                                              #
 #    - Zipfolder (here named Inputlogfiles.zip) with XML files from Inputlog   #
@@ -27,7 +27,7 @@ xmlfolder <- "data/Inputlogfiles.zip"
 tf <- tempfile(tmpdir = tdir <- tempdir())
 
 # list XML files and unzip them in temporary folder 
-list_zipfiles(xmlfolder, 'GA')
+list_zipfiles(xmlfolder, analysis = "GA")
 
 # fix special characters in filenames
 files_ga <- fix_zipfilenames(tf)
@@ -46,7 +46,7 @@ unlink(tdir, T, T)
 tf <- tempfile(tmpdir = tdir <- tempdir())
 
 # list XML files and unzip them in temporary folder 
-list_zipfiles(xmlfolder, 'SU')
+list_zipfiles(xmlfolder, analysis = "SU")
 
 # fix special characters in filenames
 files_su <- fix_zipfilenames(tf)

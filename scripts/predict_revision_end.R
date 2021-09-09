@@ -1,3 +1,15 @@
+#------------------------------------------------------------------------------#
+#                                                                              #
+# Code to train the ML models on the annotated dataset for revision end        #                                                 
+#                                                                              #
+# Pre-requisites:                                                              #
+#    Manual annotated dataset of revision end:                                 #
+#    - all_eye_keys.csv from add_fixation_data.R                               #
+#    - OR: all_rev_end.csv from get_revision_end.R if no eye data is present   #
+#                                                                              #
+#------------------------------------------------------------------------------#
+
+#load R packages
 library(tidyverse)
 library(rio)
 library(caret)
@@ -6,7 +18,7 @@ library(stringr)
 options(scipen = 1000)
 
 # read data 
-eye_key <- import("data/all-eyekeys.csv") 
+eye_key <- import("data/all_eye_keys.csv") 
 
 #add_info
 eye_key_add <- eye_key %>%
@@ -41,7 +53,7 @@ eye_key_add <- eye_key %>%
          n_ins_sofar = str_count(ins_sofar),
          n_ins_words_sofar = str_count(ins_sofar, "\\S+"),
          typed_is_deleted_chars = as.numeric(n_del == n_ins_sofar),
-         # binary variables from eye data
+         # binary variables from eye data (to be excluded if there are no fixation data)
          static = as.numeric(saccade_from == "stat"),
          progressive = as.numeric(saccade_from == "progr"),
          regressive = as.numeric(saccade_from == "regr")
@@ -229,7 +241,7 @@ test4 <- test2 %>%
                          levels = c("yes", "no")),
     revision_ended = factor(revision_ended, levels = c("yes", "no")))
 
-# summarize agreements per revision
+# summarize agreements per revision (Table 3)
 sum_agree <- test4 %>%
   group_by(fileno, rev_no) %>%
   summarize(
@@ -241,6 +253,7 @@ sum_agree <- test4 %>%
     true_positives_one_off = (abs(chars_away) == 1 | chars_away == 0)
   )
 
+# summarize performance (Table 3)
 conf <- confusionMatrix(test4$predicted_Y, test4$revision_ended)
 results <- data.frame(
   trainmethod = "baseline",

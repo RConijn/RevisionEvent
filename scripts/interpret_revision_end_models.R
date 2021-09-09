@@ -1,11 +1,22 @@
+#------------------------------------------------------------------------------#
+#                                                                              #
+# Code to inspect and interpret the machine learned models of revision end     #
+#                                                                              #
+# Pre-requisites:                                                              #
+#    - ML models (in .rds format) from predict_revision_end.R                  #
+#                                                                              #
+#------------------------------------------------------------------------------#
+
+#load R packages
+
 library(tidyverse)
 library(rio)
 options(scipen = 1000)
 
 
 #load models
-eyekeyrf <- readRDS("models/rf_eyekey_10cv.rds")
-keyrf <- readRDS("models/rf_eyekey_10cv.rds")
+#eyekeyrf <- readRDS("models/rf_eyekey_10cv.rds")
+#keyrf <- readRDS("models/rf_eyekey_10cv.rds")
 eyekeytree <- readRDS("models/tree_eyekey_10cv.rds")
 
 # interpret outcomes
@@ -48,6 +59,7 @@ varimp2 <- varimp$importance %>%
                                "Keystroke is deletion",
                                "Saccade length", "Keystroke is character"))) 
 
+# plot feature importance (Figure 3)
 ggplot(varimp2) +  
   geom_col(aes(x = fct_rev(Variable), y = Importance)) +
   coord_flip()+
@@ -55,5 +67,8 @@ ggplot(varimp2) +
   theme(text = element_text(size=14)) +
   xlab("Variable")
 
-plot(resulttree$finalModel) # only for rpart
+
+# ----only for rpart models----
+# plot decision tree (Figure 2)
+plot(resulttree$finalModel) 
 text(resulttree$finalModel) 

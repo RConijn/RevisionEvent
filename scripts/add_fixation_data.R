@@ -1,3 +1,14 @@
+#------------------------------------------------------------------------------#
+#                                                                              #
+# Code to pre-process the fixation data from CyWrite                           #
+#                                                                              #
+# Pre-requisites:                                                              #
+#    - all_rev_end.csv from get_revision_end.R                                 #
+#    - all_fixations.csv from load_data_cywrite.R                              #
+#                                                                              #
+#------------------------------------------------------------------------------#
+
+#load R packages
 library(tidyverse)
 library(rio)
 library(magrittr)
@@ -33,7 +44,6 @@ eye_sacc <- eye %>%
 
 
 # Get leading edge indicator
-# Sorry about the for-loop
 eye_sacc$leading_edge <- FALSE
 for (tok in unique(eye_sacc$token)) {
   tmp <- filter(eye_sacc, token == tok)
@@ -63,7 +73,7 @@ eye_key <- left_join(files_keys, eye_sacc_filtered, by = c("z", "token"))
 
 
 # write data
-write_csv(eye_key, "data/all-eyekeys.csv")
+write_csv(eye_key, "data/all_eye_keys.csv")
 
 
 

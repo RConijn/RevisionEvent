@@ -1,10 +1,21 @@
+#------------------------------------------------------------------------------#
+#                                                                              #
+# Code to train the ML models on the annotated dataset for true revision       #                                                 
+#                                                                              #
+# Pre-requisites:                                                              #
+#    Manual annotated dataset of revision start:                               #
+#    - all_keystrokes.csv from load_data_cywrite.R                             #
+#                                                                              #
+#------------------------------------------------------------------------------#
+
+#load R packages
 library(tidyverse)
 library(rio)
 library(caret)
 options(scipen = 1000)
 
 # read data 
-all_data <- import("data/all-keystrokes.csv") %>%
+all_data <- import("data/all_keystrokes.csv") %>%
   # keep automatically identified info not related to revision end
   select(-c(revision_end:anot_keep), -n_ins_bef_end, -ins_bef_end,
          -n_ins_words_bef_end, -n_del_sentences_bef_end)

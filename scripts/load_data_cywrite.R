@@ -1,3 +1,14 @@
+#------------------------------------------------------------------------------#
+#                                                                              #
+# Code to create a data frame with raw keystroke data from CyWrite             #
+#                                                                              #
+# Pre-requisites:                                                              #
+#    - Zipfolder (here named automatic.zip) & (fixations.zip) with json        #
+#      files for keystrokes and eyetracking from CyWrite                       #
+#                                                                              #
+#------------------------------------------------------------------------------#
+
+#load R packages
 library(tidyr)
 library(rjson)
 library(rio)
@@ -35,7 +46,7 @@ all_data <- annotation %>%
   full_join(files, by = c("token", "rev_no")) 
 
 # write final set
-export(all_data, "data/all-keystrokes.csv")
+export(all_data, "data/all_keystrokes.csv")
 
 
 ################ EYE TRACKING
@@ -49,5 +60,5 @@ files_eye <- json_files_eye %>%
          type = "fixations") 
 
 # write final set
-export(files_eye, "data/all-fixations.csv")
+export(files_eye, "data/all_fixations.csv")
 

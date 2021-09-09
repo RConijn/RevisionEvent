@@ -1,7 +1,20 @@
+#------------------------------------------------------------------------------#
+#                                                                              #
+# Code for the case study as presented in the manuscript                       #
+#                                                                              #
+# Pre-requisites:                                                              #
+#    - data from the case study (not open access)                              #
+#    - best performing model from predict_revision_start.R and                 #
+#      predict_revision_end.R                                                  #
+#                                                                              #
+#------------------------------------------------------------------------------#
+
+#load R packages
 library(tidyverse)
 library(rio)
 library(rjson)
 library(ggplot2)
+library(scales)
 library(caret)
 library(stringdist)
 library(stringr)
@@ -255,16 +268,23 @@ sum_revisions <- test4 %>%
   group_by(pid, language, rev_no) %>%
   summarize(
     chars_rev_pred = first(rev_char_no[predicted_Y == "yes"]),
+    chars_final_text = last(offset_start_final) + last(from_edge_chars)
   ) 
 
 revisions_add <- sum_revisions %>%
   inner_join(test4) %>%
   filter(chars_rev_pred == rev_char_no) %>%
   select(del, chars_rev_pred, ins_sofar, n_del, n_ins_sofar, rev_char_no,
-         dist_ins_del)
+         dist_ins_del, chars_final_text)
+
+# write final set
+export(revisions_add, "data/revisions_ml.csv")
 
 
-################ Interpret results #############################################
+################ Visualize results #############################################
+# load final ML annotation
+revisions_add <- import("data/revisions_ml.csv")
+
 # summarize revision length
 sum_rev <- revisions_add %>%
   group_by(language) %>%
@@ -273,52 +293,92 @@ sum_rev <- revisions_add %>%
     sd_length = sd(chars_rev_pred)
   )
 
-#plot inserted vs. deleted characters
+# summarize final text length
+sum_length <- revisions_add %>%
+  group_by(pid, language) %>%
+  summarize(
+    length = last(chars_final_text),
+  ) %>%
+  group_by(language) %>%
+  summarize(
+    m_length = mean(length),
+    sd_length = sd(length)
+  )
+
+#plot deleted vs. replaced characters
 plot <- revisions_add %>%
   group_by(language) %>%
   rename(Language = language) %>%
-  summarise(Deleted = mean(n_del),
-            Inserted = mean(n_ins_sofar)) %>%
-  pivot_longer(cols = c(Deleted, Inserted), 
+  # only deletions
+  summarise(Inserted = mean(n_ins_sofar[n_del == 0]),
+            Deleted = mean(n_del[n_del > 0]),
+            Replaced = mean(n_ins_sofar[n_del > 0])) %>%
+  pivot_longer(cols = c(Inserted, Deleted, Replaced), 
                names_to = "Mean number of characters", 
-               values_to = "Characters")
+               values_to = "Characters") %>%
+  mutate(`Mean number of characters` = factor(`Mean number of characters`,
+              levels = c("Replaced", "Deleted", "Inserted"))) %>%
+  mutate(Language = factor(Language, levels = c("L2_English", "L1_Turkish")))
 
-ggplot(plot, aes(x = Language, y = Characters, 
-                 fill = `Mean number of characters`)) + 
+# plot number of characters (Figure 4)
+ggplot(plot, aes(x = `Mean number of characters`, y = Characters, 
+                 fill = Language)) + 
   geom_bar(stat ="identity", position = 'dodge') +
-  theme_bw()
+  theme_bw() +
+  coord_flip() +
+  guides(fill = guide_legend(reverse = TRUE))
 
+#nof revisions
+nof_rev <- revisions_add %>%
+  group_by(language) %>%
+  summarize(n = n())
 
-## revision types
+## identify revision types
 revisions_add2 <- revisions_add %>%
   mutate(n_words_del = str_count(del, "\\S+"),
          n_words_ins = str_count(ins_sofar, "\\S+"),
          revision_type = 
-           #ifelse(n_words_del <= 1 & n_words_ins == 0 & n_del <= 3, "subword-level deletion",
-           #ifelse(n_words_del == 0 & n_words_ins <= 1, "subword-level insertion",
-           ifelse(n_words_del <= 1 & n_words_ins <= 1 & n_del <= 3, "subword-level revision",
-           ifelse(n_words_del <= 2 & n_words_ins <= 2 , "word-level revision",
+           ifelse(n_words_del <= 1 & n_words_ins == 0 & n_del <= 3, "subword-level deletion",
+           ifelse(n_words_del == 0 & n_words_ins <= 1, "subword-level insertion",
+           ifelse(n_words_del <= 1 & n_words_ins <= 1 & n_del <= 3, "subword-level substitution",
+           ifelse(n_words_del <= 2 & n_words_ins == 0, "word-level deletion",
+           ifelse(n_words_del == 0 & n_words_ins <= 2, "word-level insertion",
+           ifelse(n_words_del <= 2 & n_words_ins <= 2, "word-level substitution",
            ifelse(n_words_del > 2 & n_words_ins <= 1, "above word-level deletion",
            ifelse(n_words_del <= 1 & n_words_ins > 2, "above word-level insertion",
-             "above word-level revision")))),
+             "above word-level substitution")))))))),
          revision_type = factor(revision_type, levels = c(
-          # "subword-level deletion",
-          # "subword-level insertion",
-           "subword-level revision",
-                                           "word-level revision",
-                                           "above word-level deletion",
-                                           "above word-level insertion",
-                                           "above word-level revision")))
+           "above word-level substitution",
+           "above word-level deletion",
+           "above word-level insertion",
+           "word-level substitution",
+           "word-level deletion",
+           "word-level insertion",
+           "subword-level substitution",
+           "subword-level deletion",
+           "subword-level insertion")),
+         language = factor(language, levels = c("L2_English", "L1_Turkish"))) %>%
+  group_by(language, revision_type) %>%
+  summarize(ratio = n())
 
-ggplot(revisions_add2, aes(x = language, fill = revision_type)) + 
-  geom_bar(position = 'dodge') +
+revisions_add3 <- revisions_add2 %>%
+  rowwise() %>%
+  mutate(ratio2 = as.numeric(ifelse(language == "L1_Turkish", ratio/24,
+                           ratio/24)))
+
+#plot revision types (Figure 5)
+ggplot(revisions_add3, aes(x = revision_type, y = ratio2, fill = language)) + 
+  geom_bar(position = 'dodge', stat ="identity",) +
+  #scale_y_continuous(labels= percent_format(accuracy = 1)) +
   theme_bw() +
-  labs(x = "Language",
+  labs(x = "Revision type",
         y = "Number of revisions",
-        fill = "Revision type") 
+        fill = "Language") +
+  coord_flip() +
+  guides(fill = guide_legend(reverse = TRUE))
 
 
-## typed = deleted
+## plot where typed = deleted (not in manuscript)
 ggplot(revisions_add, aes(x = dist_ins_del, fill = language)) + 
   geom_histogram(alpha = 0.3, position = 'identity', binwidth = 2) +
   theme_bw() 

@@ -1,3 +1,13 @@
+#------------------------------------------------------------------------------#
+#                                                                              #
+# Code to add manually annotated revision end to CyWrite data                  #
+#                                                                              #
+# Pre-requisites:                                                              #
+#    - all_keystrokes.csv from load_data_cywrite.R                             #
+#                                                                              #
+#------------------------------------------------------------------------------#
+
+#load R packages
 library(tidyverse)
 library(rio)
 library(caret)
@@ -6,7 +16,7 @@ library(stringr)
 options(scipen = 1000)
 
 # read data 
-all_data <- import("data/all-keystrokes.csv") %>%
+all_data <- import("data/all_keystrokes.csv") %>%
   select(-c(surface_change:annotator), -c(background:anot_keep))
 
 # predict end [revision_ended]
@@ -39,4 +49,4 @@ checkallended <- all_data_short %>%
 
 
 # write final set
-export(all_data_short, "data/all-rev_end.csv")
+export(all_data_short, "data/all_rev_end.csv")
