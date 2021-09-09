@@ -1,0 +1,2 @@
+"","trainmethod","TN","FN","FP","TP","accuracy","accuracy_0","accuracy_1","accuracy_charsaway_mean","accuracy_charsaway_sd","precision","recall","f1"
+"1","svmRadial",833,1124,1095,39813,0.94823282398227,0.432053941908714,0.601141078838174,3.60010373443983,8.97053586700257,0.973232619536521,0.972543176099861,0.972887775673529
