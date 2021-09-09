@@ -21,7 +21,7 @@ in:  general.zip, summary.zip; out: all_logs.csv, all_summary.csv
 
 `rule_based_inputlog.R` Transforms Inputlogs keystroke data into the revision annotation table, which can be used for manual annotation or automated analysis of revision start/end using machine learning (via `run_ml_models.R`).
 
-in:  all_logs.csv; out: revision_annotation.csv _for manual annotation_, all_logs_extended.csv _for automated annotation_
+in:  all_logs.csv; out: revision_annotation.csv (_for manual annotation_), all_logs_extended.csv (_for automated annotation_)
 
 **Automated annotation:**
 
