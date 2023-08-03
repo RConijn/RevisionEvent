@@ -1,8 +1,10 @@
 # RevisionEvent extraction
-Scripts from the manuscript titled "Automated extraction of revision events from keystroke logs" (under review)
-by Rianne Conijn, Emily Dux Speltz, and Evgeny Chukharev-Hudilainen
+Scripts from the manuscript titled "Automated extraction of revision events from keystroke logs" (2021)  
+by Rianne Conijn, Emily Dux Speltz, and Evgeny Chukharev-Hudilainen.
 
 Extraction of revision events for Inputlog and CyWrite data. Code can be adapted to other keystroke logging/eye tracking applications. Feel free to email me if you have any questions about the code. In most cases, the case_study.R file will be enough to run the model on a new dataset. All other files are provided as a reference to show how the models are created.
+
+If you use these models, please refer to the corresponding paper: Conijn, R., Dux Speltz, E. & Chukharev-Hudilainen, E. (2021). Automated extraction of revision events from keystroke data. _Reading and Writing_. https://doi.org/10.1007/s11145-021-10222-w
 
 _DISCLAIMER:_ 
 
